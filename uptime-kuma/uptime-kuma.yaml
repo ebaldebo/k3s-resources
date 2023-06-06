@@ -1,0 +1,49 @@
+# Selfhosted application monitoring
+apiVersion: v1
+kind: Service
+metadata:
+  name: uptime-kuma
+  labels:
+    app: uptime-kuma
+  namespace: uptime-kuma
+spec:
+  selector:
+    app: uptime-kuma
+  ports:
+    - port: 3191
+      targetPort: 3001
+      name: uptime-kuma
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: uptime-kuma
+  namespace: uptime-kuma
+spec:
+  selector:
+    matchLabels:
+      app: uptime-kuma
+  serviceName: uptime-kuma
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: uptime-kuma
+    spec:
+      containers:
+        - name: uptime-kuma
+          image: louislam/uptime-kuma:1
+          ports:
+            - containerPort: 3001
+              name: uptime-kuma
+          volumeMounts:
+            - name: uptime-kuma-data-volume
+              mountPath: /app/data
+          env:
+            - name: TZ
+              value: "Europe/Stockholm"
+      volumes:
+        - name: uptime-kuma-data-volume
+          persistentVolumeClaim:
+            claimName: uptime-kuma-data-pvc 
