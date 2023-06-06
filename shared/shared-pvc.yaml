@@ -1,0 +1,13 @@
+# PVC for shared storage across all namespaces
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-pvc
+  namespace: shared
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
