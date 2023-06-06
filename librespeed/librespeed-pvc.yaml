@@ -1,13 +1,12 @@
-# PVC for shared storage across all namespaces
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: shared-pvc
-  namespace: shared
+  name: librespeed-config-pvc
+  namespace: librespeed
 spec:
   accessModes:
     - ReadWriteMany
   storageClassName: longhorn
   resources:
     requests:
-      storage: 5Gi
+      storage: 100Mi

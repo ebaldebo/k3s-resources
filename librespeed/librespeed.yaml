@@ -1,0 +1,49 @@
+# Selfhosted speedtest
+apiVersion: v1
+kind: Service
+metadata:
+  name: librespeed
+  labels:
+    app: librespeed
+  namespace: librespeed
+spec:
+  selector:
+    app: librespeed
+  ports:
+    - port: 3190
+      targetPort: 80
+      name: librespeed
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: librespeed
+  namespace: librespeed
+spec:
+  selector:
+    matchLabels:
+      app: librespeed
+  serviceName: librespeed
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: librespeed
+    spec:
+      containers:
+        - name: librespeed
+          image: lscr.io/linuxserver/librespeed:latest
+          ports:
+            - containerPort: 80
+              name: librespeed
+          volumeMounts:
+            - name: librespeed-config-volume
+              mountPath: /config
+          env:
+            - name: TZ
+              value: "Europe/Stockholm"
+      volumes:
+        - name: librespeed-config-volume
+          persistentVolumeClaim:
+            claimName: librespeed-config-pvc
